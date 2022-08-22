@@ -12,7 +12,6 @@ jobs:
           name: Build front-end
           command: |
             # Your code here
-          #  sudo rm -r -v frontend
             mkdir frontend
             cd frontend
             npm install
@@ -26,13 +25,12 @@ jobs:
       - image: cimg/node:18.7.0
     steps:
       - checkout
-    #  - restore_cache:
-    #      keys: [backend-build]
+      - restore_cache:
+          keys: [backend-build]
       - run:
           name: Back-end build
           command: |
             # Your code here
-          #  sudo rm -r -v backend
             mkdir backend
             cd backend
             npm install
