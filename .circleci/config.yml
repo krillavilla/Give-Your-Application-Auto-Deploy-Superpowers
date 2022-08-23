@@ -21,7 +21,7 @@ jobs:
 
   build-backend:
     docker:
-      - image: cimg/node:18.7.0
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -39,7 +39,7 @@ jobs:
 
   test-frontend:
     docker:
-     - image: cimg/node:18.7.0
+     - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -56,7 +56,7 @@ jobs:
 
   test-backend:
     docker:
-      - image: cimg/node:18.7.0
+      - image: circleci/node:13.8.0
     # Docker image here
     steps:
       - checkout
@@ -74,7 +74,7 @@ jobs:
 
   scan-frontend:
     docker:
-      - image: cimg/node:18.7.0
+      - image:  circleci/node:13.8.0
     # Docker image here
     steps:
       - checkout
@@ -87,8 +87,6 @@ jobs:
           command: |
             cd frontend
             npm install
-            npm install oauth
-            npm audit fix
             npm audit fix --force
             npm audit --audit-level=critical --force
             npm audit --audit-level=critical
@@ -98,7 +96,7 @@ jobs:
 
   scan-backend:
     docker:
-      - image: cimg/node:18.7.0
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -110,8 +108,6 @@ jobs:
             npm install
             npm install oauth
             npm audit fix
-            npm audit fix --force
-            npm audit --audit-level=critical --force
             npm audit --audit-level=critical
       - restore_cache:
           paths: [backend/node_modules]
