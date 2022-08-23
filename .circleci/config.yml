@@ -107,7 +107,7 @@ jobs:
             cd backend
             npm install
             npm install oauth
-            npm audit fix
+            npm audit fix --force
             npm audit --audit-level=critical
       - restore_cache:
           paths: [backend/node_modules]
