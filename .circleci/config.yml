@@ -1,8 +1,20 @@
 version: 2.1
 
 orbs:
-  slack: circleci/slack@4.1
+  slack: circleci/slack@4.3.0
 
+commands:
+  notify_slack_error:
+    steps:
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+
+  notify_slack_pass:
+    steps:
+      - slack/notify:
+          event:  pass
+          template: basic_success_1
 jobs:
   build-frontend:
     docker:
@@ -21,6 +33,8 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
+      - notify_slack_error
+      - notify_slack_pass
 
   build-backend:
     docker:
@@ -39,6 +53,8 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
+      - notify_slack_error
+      - notify_slack_pass
 
   test-frontend:
     docker:
@@ -56,6 +72,8 @@ jobs:
       - restore_cache:
           paths: [frontend/node_modules]
           key: frontend-build
+      - notify_slack_error
+      - notify_slack_pass
 
   test-backend:
     docker:
@@ -74,6 +92,8 @@ jobs:
       - restore_cache:
           paths:  [backend/node_modules]
           key: backend-build
+      - notify_slack_error
+      - notify_slack_pass
 
   scan-frontend:
     docker:
@@ -96,6 +116,8 @@ jobs:
       - restore_cache:
           paths: [frontend/node_modules]
           key: frontend-build
+      - notify_slack_error
+      - notify_slack_pass
 
   scan-backend:
     docker:
@@ -115,54 +137,10 @@ jobs:
       - restore_cache:
           paths: [backend/node_modules]
           key: backend-build
-
-  deploy:
-    docker:
-      - image: 'cimg/base:stable'
-    steps:
-      - run: echo "deploy my app"
-      - slack/notify:
-          event: fail
-          mentions: '@EngineeringTeam'
-          template: basic_fail_1
-      - slack/notify:
-          event: pass
-          template: success_tagged_deploy_1
-  test:
-    docker:
-      - image: 'cimg/base:stable'
-    steps:
-      - run: echo "test my app"
-
-
-
-
+      - notify_slack_error
+      - notify_slack_pass
 
 workflows:
-  test-and-deploy:
-    jobs:
-      - test
-      - slack/on-hold:
-          context: slack-secrets
-          filters:
-            tags:
-              only: /^v.*/
-          requires:
-            - test
-      - pause_workflow:
-          filters:
-            tags:
-              only: /^v.*/
-          requires:
-            - test
-            - slack/on-hold
-          type: approval
-      - deploy:
-          filters:
-            tags:
-              only: /^v.*/
-          requires:
-            - pause_workflow
   default:
     jobs:
       - build-frontend
