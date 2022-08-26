@@ -4,6 +4,22 @@ orbs:
   slack: circleci/slack@4.3.0
 
 commands:
+
+  destroy-environment:
+    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+    parameters:
+    # Add parameter here
+    steps:
+      - run:
+          name: Destroy environments
+          when: on_fail
+          command: |
+            # Your code here
+            aws cloudformation delete-stack --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+            aws cloudformation delete-stack --stack-name "InitialStack-${CIRCLE_WORKFLOW_ID:0:7}"
+            aws cloudformation delete-stack --stack-name  "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+            exit 1
+
   notify_slack_error:
     steps:
       - slack/notify:
@@ -139,6 +155,43 @@ jobs:
           key: backend-build
       - notify_slack_error
       - notify_slack_pass
+
+  deploy-infrastructure:
+    docker:
+      - image:  amazon/aws-cli
+    # Docker image here that supports AWS CLI
+    steps:
+      # Checkout code from git
+      - run:
+          name: Ensure back-end infrastructure exists
+          command: |
+            aws cloudformation deploy \
+              --template-file Give-Your-Application-Auto-Deploy-Superpowers/.circleci/files/backend.yml \
+              #--tags project=your-udapeople \
+              # --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              # --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
+              exit 1
+      - run:
+          name: Ensure front-end infrastructure exist
+          command: |
+            aws cloudformation deploy \
+              --template-file .Give-Your-Application-Auto-Deploy-Superpowers/.circleci/files/frontend.yml \
+              #--tags project=udapeople \
+              # --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              # --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
+              exit 1
+      - run:
+          name: Add back-end ip to ansible inventory
+          command: |
+            # Your code here
+            sudo apt-get install tar
+            sudo apt-get install gzip
+            exit 1
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/.circleci/ansible/inventory.txt
+      # Here's where you will add some code to rollback on failure
 
 workflows:
   default:
