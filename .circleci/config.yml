@@ -202,8 +202,8 @@ jobs:
           name: Add back-end ip to ansible inventory
           command: |
             # Your code here
-            sudo apt-get install tar
-            sudo apt-get install gzip
+            yum apt install tar
+            yum apt install gzip
             exit 1
       - persist_to_workspace:
           root: ~/
@@ -226,9 +226,9 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            sudo apt-get install ansible
-            sudo apt-get install tar
-            sudo apt-get install gzip
+            yum apt install ansible
+            yum apt install tar
+            yum apt install gzip
             # Your code here
             exit 1
       - run:
@@ -278,11 +278,11 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            sudo apt-get update
-            sudo apt-get upgrade -y
-            sudo apt-get install python3
-            sudo apt-get install ansible
-            sudo apt-get install nodejs
+            yum apt update
+            yum apt upgrade -y
+            yum apt install python3
+            yum apt install ansible
+            yum apt install nodejs
             # your code here
       - run:
           name: Get backend url
