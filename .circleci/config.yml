@@ -248,9 +248,8 @@ jobs:
       # Checkout code from git
       - checkout
       - run:
-          name: Run migrations
+          name: Run Migrations
           command: |
-          # Your code here
             cd backend
             npm install
             npm run build
@@ -260,14 +259,13 @@ jobs:
       - run:
           name: Send migration results to memstash
           command: |
-                     cd backend
-                     cat ~/project/backend/migrations_dump.txt
-                     
-                     if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
-                     then
-                     curl -H "Content-Type: text/plain" -H "token: 7933fe63-4687-4fa1-8426-aa25aa1730ec" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
-                     fi
-            exit 1
+            cd backend
+            cat ~/project/backend/migrations_dump.txt
+             
+            if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
+            then
+            curl -H "Content-Type: text/plain" -H "token: 7933fe63-4687-4fa1-8426-aa25aa1730ec" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
+            fi
       - destroy-environment
       - revert-migrations
 
@@ -293,9 +291,9 @@ jobs:
           command: |
             # your code here
             export BACKEND_IP=$(aws ec2 describe-instances...............)
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "API_URL = ${API_URL}"
-            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+            export API_URL="http://34.212.8.54:3030"
+            echo "API_URL = http://34.212.8.54:3030"
+            echo API_URL="http://34.212.8.54:3030" >> frontend/.env
             cat frontend/.env
       - run:
           name: Deploy frontend objects
