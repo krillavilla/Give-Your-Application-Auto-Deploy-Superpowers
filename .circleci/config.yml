@@ -204,7 +204,6 @@ jobs:
             # Your code here
             yum install -y tar
             yum install -y gzip
-            exit 1
       - persist_to_workspace:
           root: ~/
           paths:
@@ -252,7 +251,6 @@ jobs:
             npm run build
             npm run migrations > migrations_dump.txt
             cat migrations_dump.txt
-            exit 1
       - run:
           name: Send migration results to memstash
           command: |
@@ -278,10 +276,10 @@ jobs:
           name: Install dependencies
           command: |
             yum apt update
-            yum apt upgrade -y
-            yum install python3 
-            yum install ansible
-            yum install nodejs
+            yum apt upgrade
+            yum install -y python3 
+            yum install -y ansible
+            yum install -y nodejs
             # your code here
       - run:
           name: Get backend url
