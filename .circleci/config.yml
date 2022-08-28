@@ -202,8 +202,8 @@ jobs:
           name: Add back-end ip to ansible inventory
           command: |
             # Your code here
-            yum install tar
-            yum install gzip
+            yum install -y tar
+            yum install -y gzip
             exit 1
       - persist_to_workspace:
           root: ~/
@@ -230,7 +230,6 @@ jobs:
             yum install tar
             yum install gzip
             # Your code here
-            exit 1
       - run:
           name: Configure server
           command: |
@@ -280,7 +279,7 @@ jobs:
           command: |
             yum apt update
             yum apt upgrade -y
-            yum install python3
+            yum install python3 
             yum install ansible
             yum install nodejs
             # your code here
