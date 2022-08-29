@@ -201,8 +201,9 @@ jobs:
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            yum install -y tar
-            yum install -y gzip
+            apt update
+            apt upgrade 
+            sudo apt install tar && sudo apt install gzip -y
       - persist_to_workspace:
           root: ~/
           paths:
@@ -219,12 +220,10 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            yum update 
-            yum upgrade
-            yum install epel-release
-            yum -y install ansible
-            yum -y install tar
-            yum -y install gzip
+            apt update 
+            apt upgrade
+            sudo apt install ansible && sudo apt install tar 
+            sudo apt install gzip
       - run:
           name: Configure server
           command: |
@@ -266,7 +265,7 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image:  amazon/aws-cli
+      - image:  cimg/aws:2022.06
     # Docker image here that supports AWS CLI
     steps:
       - checkout
@@ -275,12 +274,11 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            yum apt update
-            yum apt upgrade
-            yum install -y python3 
-            yum install -y ansible
-            yum install -y nodejs
-            # your code here
+            apt update 
+            apt upgrade 
+            sudo apt install python3 && sudo apt install ansible
+            sudo apt install nodejs 
+            sudo apt install aws
       - run:
           name: Get backend url
           command: |
