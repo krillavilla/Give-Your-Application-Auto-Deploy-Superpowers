@@ -177,7 +177,7 @@ jobs:
 
   deploy-infrastructure:
     docker:
-      - image:  amazon/aws-cli
+      - image:  cimg/aws:2022.06
     # Docker image here that supports AWS CLI
     steps:
       - checkout
@@ -201,7 +201,6 @@ jobs:
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            # Your code here
             yum install -y tar
             yum install -y gzip
       - persist_to_workspace:
@@ -211,7 +210,7 @@ jobs:
       # Here's where you will add some code to rollback on failure
   configure-infrastructure:
     docker:
-      - image: amazon/aws-cli
+      - image: cimg/aws:2022.06
     # Docker image here that supports Ansible
     steps:
       - checkout
