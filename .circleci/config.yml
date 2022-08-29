@@ -201,8 +201,8 @@ jobs:
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            apt update
-            apt upgrade 
+            sudo apt update
+            sudo apt upgrade 
             sudo apt install tar && sudo apt install gzip -y
       - persist_to_workspace:
           root: ~/
@@ -220,8 +220,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apt update 
-            apt upgrade
+            sudo apt update 
+            sudo apt upgrade
             sudo apt install ansible && sudo apt install tar 
             sudo apt install gzip
       - run:
@@ -274,8 +274,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apt update 
-            apt upgrade 
+            sudo apt update 
+            sudo apt upgrade 
             sudo apt install python3 && sudo apt install ansible
             sudo apt install nodejs 
             sudo apt install aws
