@@ -223,7 +223,6 @@ jobs:
             yum -y install ansible
             yum -y install tar
             yum -y install gzip
-            # Your code here
       - run:
           name: Configure server
           command: |
