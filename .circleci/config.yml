@@ -218,9 +218,9 @@ jobs:
       - add_ssh_keys:
           fingerprints: ['92 FA 50 73 7B 51 3C B4 08 89 D9 5F 5D F5 B3 8E 72 98 46 68']
       - attach_workspace:
-          at: ~/
+          at: .
       - run:
-          name: Install dependencies
+          name: Install tar/gzip utility
           command: |
             yum -y install ansible
             yum -y install tar
@@ -229,8 +229,13 @@ jobs:
       - run:
           name: Configure server
           command: |
-            # Your code here
-            exit 1
+            cd .circleci/ansible
+            cat inventory.txt
+            ansible-playbook -i inventory.txt configure-server.yml
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/backend
 
       - destroy-environment
 
