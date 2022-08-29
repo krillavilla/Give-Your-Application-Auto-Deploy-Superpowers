@@ -230,6 +230,7 @@ jobs:
             # Your code here
             cd .circleci/ansible
             cat inventory.txt
+            cp udapeople.pem
             ansible-playbook -i inventory.txt configure-server.yml --private-key udapeople.pem
       - attach_workspace:
           at: ~/
