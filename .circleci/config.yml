@@ -237,31 +237,36 @@ jobs:
 
   run-migrations:
     docker:
-      - image:  circleci/node:13.8.0
-    # Docker image here that supports NodeJS
+      - image: circleci/node:13.8.0
     steps:
-      # Checkout code from git
       - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            sudo apt-get install -y tar gzip curl
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip -qq awscliv2.zip
+            sudo ./aws/install
+      - attach_workspace:
+          at: ~/
       - run:
           name: Run Migrations
           command: |
             cd backend
             npm install
-            npm install aws-cli
-            npm run build
+            npm run build 
             npm run migrations > migrations_dump.txt
-            npm audit fix --force --audit-level=critical
-            echo cat migrations_dump.txt
             cat migrations_dump.txt
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/backend
       - run:
-          name: Send migration results to memstash
+          name: Send migration status to memstash.io
           command: |
-            cd backend
-            cat ~/project/backend/migrations_dump.txt
-             
-            if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
+            if grep -q "has been executed successfully" ~/project/backend/migrations_dump.txt
             then
-            curl -H "Content-Type: text/plain" -H "token: 7933fe63-4687-4fa1-8426-aa25aa1730ec" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
+              curl -H "Content-Type: text/plain" -H "token: 7933fe63-4687-4fa1-8426-aa25aa1730ec" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
             fi
       - destroy-environment
       - revert-migrations
