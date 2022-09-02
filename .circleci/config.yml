@@ -224,6 +224,8 @@ jobs:
             sudo apt upgrade
             sudo apt install ansible && sudo apt install tar 
             sudo apt install gzip
+            sudo apt install 
+            sudo apt install aws
       - run:
           name: Configure server
           command: |
