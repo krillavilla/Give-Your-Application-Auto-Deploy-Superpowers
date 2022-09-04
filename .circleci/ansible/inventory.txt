@@ -1,2 +1,2 @@
 [ALL]
-54.189.223.112
+ec2-54-189-223-112.us-west-2.compute.amazonaws.com
