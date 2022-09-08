@@ -285,8 +285,7 @@ jobs:
             sudo apt update 
             sudo apt upgrade 
             sudo apt install python3 && sudo apt install ansible
-            sudo apt install nodejs 
-            sudo apt install aws
+            sudo apt install nodejs
       - run:
           name: Get backend url
           command: |
