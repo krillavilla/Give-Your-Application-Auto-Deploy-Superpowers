@@ -322,8 +322,8 @@ jobs:
       - run:
           name: Install Dependencies
           command: |
-            apk add --update ansible curl nodejs npm
-            apk add --no-cache aws-cli
+            apk add --update ansible tar gzip curl aws-cli nodejs npm
+            apk add --update npm
       - run:
           name: Deploy Backend
           command: |
@@ -355,7 +355,7 @@ jobs:
       - run:
           name: Install Dependencies
           command: |
-            apk add --update --no-cache  curl aws-cli tar gzip nodejs npm ansible
+            apk add --update --no-cache curl aws-cli tar gzip nodejs npm
       - attach_workspace:
           at: ~/
       - run:
