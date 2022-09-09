@@ -1,36 +1,21 @@
----
-- name: Creates App directory
-  file:
-    path: ~/app
-    state: directory
+- name: "install pm2"
+  become: true
+  npm:
+    name: pm2
+    global: yes
+    production: yes
+    state: present
 
-- name: Upload app
-  copy:
-    src: files/artifact.tar
-    dest: "~/app"
-- name: Install dependencies
+- name: Extract files
+  become: true
+  unarchive:
+    src: files/artifact.tar.gz
+    dest: /home/ubuntu
+
+- name: Executing node
   become: true
   shell: |
-    curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
-    apt-get install -y nodejs
-    apt-get install gcc g++ make -y
-    npm install -g npm
-    npm install -g pm2
-    cd /home/ubuntu/app
-    tar xf /home/ubuntu/app/artifact.tar
-
-- name: Start backend
-  shell:  |
-    /usr/bin/pm2 start /home/ubuntu/app/dist/main.js --name backend -f
-  environment:
-    ENVIRONMENT: production
-    NODE_ENV: production
-    TYPEORM_CONNECTION: postgres
-    TYPEORM_MIGRATIONS_DIR: ~/src/migrations
-    TYPEORM_MIGRATIONS: ~/src/migrations/*.ts
-    TYPEORM_ENTITIES: ~/src/modules/domain/**/*.entity.ts
-    TYPEORM_HOST: udapeople.cvfalocpsmud.us-east-1.rds.amazonaws.com
-    TYPEORM_PORT: 5432
-    TYPEORM_USERNAME: postgres
-    TYPEORM_PASSWORD: mypassword
-    TYPEORM_DATABASE: postgres
+    cd /home/ubuntu
+    npm install
+    pm2 stop default
+    sudo pm2 start npm -- start
