@@ -3,7 +3,6 @@
   become: true
   apt:
     upgrade: "yes"
-    state: fixed
 
 - name: "install dependencies."
   become: true
@@ -19,8 +18,3 @@
     global: yes
     production: yes
     state: present
-
-- name: Creates directory
-  file:
-    path: ./backend-app
-    state: directory
