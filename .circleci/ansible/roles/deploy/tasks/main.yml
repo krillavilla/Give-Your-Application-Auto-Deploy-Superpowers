@@ -1,22 +1,43 @@
-- name: "wait 600 seconds for target connection to become reachable/usable."
-  ansible.builtin.wait_for_connection:
-  timeout: 900
-- name: Copy backend compressed file
+- name: Creates directory
+  file:
+    path: /home/ubuntu/backend
+    state: directory
+
+- name: Unarchive a file that is already on the remote machine
+  ansible.builtin.unarchive:
+    src: /root/project/backend/app.tar.gz
+    dest: /home/ubuntu/backend/
+
+- name: "deploy backend app to new location"
   become: true
   copy:
-    src: /home/circleci/project/artifact.tar.gz
+    src:  /root/project/backend/.env
     dest: /home/ubuntu/backend/
-- name: Extract backend files
+
+
+- name: "install package dependencies"
+  become: true
+  command: npm install & npm audit fix --audit-level=critical --force
+  args:
+    chdir: /home/ubuntu/backend
+
+
+- name: "build package"
+  become: true
+  command: npm run build
+  args:
+    chdir: /home/ubuntu/backend
+
+- name: "run migrations again"
+  become: true
+  command: npm run migrations
+  args:
+    chdir: /home/ubuntu/backend
+
+
+- name: Executing node
   become: true
   shell: |
-    cd /home/ubuntu/backend
-    tar -vxf artifact.tar.gz
-    rm artifact.tar.gz
-- name : Compile and start app
-  become : true
-  shell : | 
-    cd /home/ubuntu/backend
-    sudo npm install
-    
-    sudo pm2 stop default
-    sudo pm2 start npm -- start
+    cd /home/ubuntu/backend 
+    pm2 start npm --name backend -- start
+    pm2 ls

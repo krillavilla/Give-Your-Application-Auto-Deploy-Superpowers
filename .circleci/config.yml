@@ -337,6 +337,19 @@ jobs:
       - run:
           name: Deploy Backend
           command: |
+            echo ENVIRONMENT=production >> "backend/.env"
+            echo TYPEORM_CONNECTION=postgres >> "backend/.env"
+            echo TYPEORM_MIGRATIONS_DIR=./migrations >> "backend/.env"
+            echo TYPEORM_ENTITIES=./src/modules/**/*.entity.ts >> "backend/.env"
+            echo TYPEORM_MIGRATIONS=./migrations/*.ts >> "backend/.env"
+            echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
+            echo TYPEORM_PORT=5432 >> "backend/.env"
+            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
+            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
+            echo TYPEORM_DATABASE=postgres >> "backend/.env"
+      - run:
+          name: Deploy Backend
+          command: |
             export TYPEORM_MIGRATIONS_DIR=./migrations
             export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
             export TYPEORM_MIGRATIONS=./migrations/*.ts
