@@ -9,6 +9,7 @@
     src: files/artifact.tar
     dest: "~/app"
 - name: Install dependencies
+  become: true
   shell: |
     curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
     apt-get install -y nodejs
