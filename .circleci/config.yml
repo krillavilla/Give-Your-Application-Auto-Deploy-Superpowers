@@ -340,7 +340,6 @@ jobs:
           no_output_timeout: 30m
           command: |
             cd backend
-          #  touch .env
             echo ENVIRONMENT=production >> "backend/.env"
             echo TYPEORM_CONNECTION=postgres >> ".env"
             echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> ".env"
