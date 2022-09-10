@@ -18,9 +18,10 @@ commands:
           when: on_fail
           command: |
             echo "Destroying environments ${CIRCLE_WORKFLOW_ID:0:7}"
-            aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.workflow_id>>
-            aws s3 rm s3://udapeople-<<parameters.workflow_id>> --recursive
-            aws cloudformation delete-stack --stack-name udapeople-frontend-<<parameters.workflow_id>>
+            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            aws cloudformation delete-stack --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+            aws cloudformation delete-stack --stack-name "InitialStack-${CIRCLE_WORKFLOW_ID:0:7}"
+            aws cloudformation delete-stack --stack-name  "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
 
   revert-migrations:
     description: Revert the last migration
@@ -224,14 +225,15 @@ jobs:
             sudo apt install ansible && sudo apt install tar 
             sudo apt install gzip
       - run:
-          name: Configure Server
+          name: Configure server
           command: |
+            # Your code here
             cd .circleci/ansible
             cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml
       - attach_workspace:
           at: ~/
-      - destroy-environment
+    #  - destroy-environment
 
   run-migrations:
     docker:
@@ -314,7 +316,7 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-            fingerprints: [ 'aa:59:2c:fd:5c:7b:98:c4:32:fb:c9:94:94:35:4f:b1' ]
+          fingerprints: [ 'aa:59:2c:fd:5c:7b:98:c4:32:fb:c9:94:94:35:4f:b1' ]
       - attach_workspace:
           at: ~/
       - run:
