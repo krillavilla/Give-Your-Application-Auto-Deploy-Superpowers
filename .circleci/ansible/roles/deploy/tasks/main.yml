@@ -1,43 +1,36 @@
-- name: Creates directory
+---
+- name: Creates App directory
   file:
-    path: /home/ubuntu/backend
+    path: ~/app
     state: directory
 
-- name: Unarchive a file that is already on the remote machine
-  ansible.builtin.unarchive:
-    src: /root/project/backend/app.tar.gz
-    dest: /home/ubuntu/backend/
-
-- name: "deploy backend app to new location"
-  become: true
+- name: Upload app
   copy:
-    src:  /root/project/backend/.env
-    dest: /home/ubuntu/backend/
-
-
-- name: "install package dependencies"
-  become: true
-  command: npm install & npm audit fix --audit-level=critical --force
-  args:
-    chdir: /home/ubuntu/backend
-
-
-- name: "build package"
-  become: true
-  command: npm run build
-  args:
-    chdir: /home/ubuntu/backend
-
-- name: "run migrations again"
-  become: true
-  command: npm run migrations
-  args:
-    chdir: /home/ubuntu/backend
-
-
-- name: Executing node
+    src: files/artifact.tar
+    dest: "~/app"
+- name: Install dependencies
   become: true
   shell: |
-    cd /home/ubuntu/backend 
-    pm2 start npm --name backend -- start
-    pm2 ls
+    curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+    apt-get install -y nodejs
+    apt-get install gcc g++ make -y
+    npm install -g npm
+    npm install -g pm2
+    cd /home/ubuntu/app
+    tar xf /home/ubuntu/app/artifact.tar
+
+- name: Start backend
+  shell:  |
+    /usr/bin/pm2 start /home/ubuntu/app/dist/main.js --name backend -f
+  environment:
+    ENVIRONMENT: production
+    NODE_ENV: production
+    TYPEORM_CONNECTION: postgres
+    TYPEORM_MIGRATIONS_DIR: ~/src/migrations
+    TYPEORM_MIGRATIONS: ~/src/migrations/*.ts
+    TYPEORM_ENTITIES: ~/src/modules/domain/**/*.entity.ts
+    TYPEORM_HOST: udapeople.crvxyau4u1vo.us-west-2.rds.amazonaws.com
+    TYPEORM_PORT: 5432
+    TYPEORM_USERNAME: postgres
+    TYPEORM_PASSWORD: mypassword
+    TYPEORM_DATABASE: postgres

@@ -327,16 +327,6 @@ jobs:
       - run:
           name: Deploy Backend
           command: |
-            cd backend
-            npm i 
-            npm run build
-            cd ..
-            tar -C backend -czvf artifact.tar.gz .
-            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
-            mv artifact.tar.gz .circleci/ansible/roles/deploy/files/
-      - run:
-          name: Deploy Backend
-          command: |
             echo ENVIRONMENT=production >> "backend/.env"
             echo TYPEORM_CONNECTION=postgres >> "backend/.env"
             echo TYPEORM_MIGRATIONS_DIR=./migrations >> "backend/.env"
@@ -347,6 +337,16 @@ jobs:
             echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
             echo TYPEORM_DATABASE=postgres >> "backend/.env"
+      - run:
+          name: Deploy Backend
+          command: |
+            cd backend
+            npm i 
+            npm run build
+            cd ..
+            tar -C backend -czvf artifact.tar.gz .
+            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
+            mv artifact.tar.gz .circleci/ansible/roles/deploy/files/
       - run:
           name: Deploy Backend
           command: |
