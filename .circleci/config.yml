@@ -341,7 +341,8 @@ jobs:
           command: |
             cd backend
             touch .env
-            echo ENVIROMENT=production > ".env"
+            echo NODE_ENV=development >> "backend/.env"
+            echo ENVIRONMENT=production > ".env"
             echo TYPEORM_CONNECTION=postgres >> ".env"
             echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> ".env"
             echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> ".env"
