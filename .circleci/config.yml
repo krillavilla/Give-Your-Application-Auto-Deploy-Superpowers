@@ -225,14 +225,15 @@ jobs:
             sudo apt install ansible && sudo apt install tar 
             sudo apt install gzip
       - run:
-          name: Configure server
+          name: Configure Server
+          no_output_timeout: 30m
           command: |
-            echo NODE_ENV=production >> backend/.env
-            echo VERSION=1 >> backend/.env
-            echo TYPEORM_CONNECTION=postgres >> backend/.env
-            echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> backend/.env
-            echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> backend/.env
-            echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> backend/.env
+            echo NODE_ENV=production >> "backend/.env"
+            echo VERSION=1 >> "backend/.env"
+            echo TYPEORM_CONNECTION=postgres >> "backend/.env"
+            echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> "backend/.env"
+            echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> "backend/.env"
+            echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> "backend/.env"
             echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
             echo TYPEORM_PORT=$TYPEORM_PORT >> "backend/.env"
             echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
@@ -336,32 +337,34 @@ jobs:
             pip install awscli
       - run:
           name: Configure Env File
-          command: |
-            echo NODE_ENV=production >> backend/.env
-            echo VERSION=1 >> backend/.env
-            echo TYPEORM_CONNECTION=postgres >> backend/.env
-            echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> backend/.env
-            echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> backend/.env
-            echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> backend/.env
-            echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
-            echo TYPEORM_PORT=$TYPEORM_PORT >> "backend/.env"
-            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
-            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
-            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
-            cat backend/.env
-      - run:
-          name: Deploy backend
+          no_output_timeout: 30m
           command: |
             cd backend
+            touch .env
+            echo ENVIROMENT=production > ".env"
+            echo TYPEORM_CONNECTION=postgres >> ".env"
+            echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> ".env"
+            echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> ".env"
+            echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> ".env"
+            echo TYPEORM_HOST=$TYPEORM_HOST >> ".env"
+            echo TYPEORM_PORT=$TYPEORM_PORT >> ".env"
+            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> ".env"
+            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ".env"
+            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ".env"
             npm i
             npm run build
-            cd ..
-            # Zip the directory
-            tar -C backend -czvf artifact.tar.gz .
-            cp artifact.tar.gz .circleci/ansible/            
-            cd .circleci/ansible
-            echo "Contents  of the inventory.txt file is -------"
-            cat inventory.txt
+            echo "List of contents before deleting: "
+            ls -a
+            echo "----------------------------------------"
+            rm -rf node_modules 
+            rm -rf dist
+            rm -rf test
+            rm README.md 
+            echo "List of files and dirs that will be sent to ansible: "
+            ls -a
+            echo "----------------------------------------"
+            mkdir -p ../.circleci/ansible/roles/deploy/files
+            cd ../.circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy-environment
       - revert-migrations
@@ -411,8 +414,8 @@ jobs:
             else
               exit 1
             fi
-    #  - destroy-environment
-    #  - revert-migrations
+      - destroy-environment
+      - revert-migrations
 
 workflows:
   default:
