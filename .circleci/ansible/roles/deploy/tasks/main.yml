@@ -1,25 +1,35 @@
 ---
-- name: "update packages."
-  become: true
-  apt:
-    update_cache: yes
+- name: Creates App directory
+  file:
+    path: ~/app
+    state: directory
 
-- name: "upgrade packages."
+- name: Upload app
+  copy:
+    src: files/artifact.tar
+    dest: "~/app"
+- name: Install dependencies
   become: true
-  apt:
-    upgrade: "yes"
+  shell: |
+    curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+    apt-get install -y nodejs
+    apt-get install gcc g++ make -y
+    npm install -g npm
+    npm install -g pm2
+    cd /home/ubuntu/app
+    tar xf /home/ubuntu/app/artifact.tar
 
-- name: "install dependencies."
-  become: true
-  apt:
-    name: ["nodejs", "npm"]
-    state: latest
-    update_cache: yes
-
-- name: "install pm2"
-  become: true
-  npm:
-    name: pm2
-    global: yes
-    production: yes
-    state: present
+- name: Start backend
+  shell:  |
+    /usr/bin/pm2 start /home/ubuntu/app/dist/main.js --name backend -f
+  environment:
+    - ENVIRONMENT: "{{ lookup('env', 'ENVIRONMENT')}}"
+    - TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION')}}"
+    - TYPEORM_ENTITIES: "{{ lookup('env', 'TYPEORM_ENTITIES')}}"
+    - TYPEORM_HOST: "{{ lookup('env', 'TYPEORM_HOST')}}"
+    - TYPEORM_PORT: "{{ lookup('env', 'TYPEORM_PORT') }}"
+    - TYPEORM_USERNAME: "{{ lookup('env', 'TYPEORM_USERNAME')}}"
+    - TYPEORM_PASSWORD: "{{ lookup('env', 'TYPEORM_PASSWORD')}}"
+    - TYPEORM_DATABASE: "{{ lookup('env', 'TYPEORM_DATABASE')}}"
+    - TYPEORM_MIGRATIONS_DIR: "{{ lookup('env', 'TYPEORM_MIGRATIONS_DIR')}}"
+    - TYPEORM_MIGRATIONS: "{{ lookup('env', 'TYPEORM_MIGRATIONS')}}"
