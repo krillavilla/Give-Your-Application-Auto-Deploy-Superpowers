@@ -358,6 +358,7 @@ jobs:
           command: |
             cd backend
             mkdir files
+            cd files
             touch .tar
             touch artifact.tar
             npm i
