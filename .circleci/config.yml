@@ -357,6 +357,7 @@ jobs:
           name: Deploy backend
           command: |
             cd backend
+            rm -f -r files
             mkdir files
             touch files/.tar
             touch files/artifact.tar
