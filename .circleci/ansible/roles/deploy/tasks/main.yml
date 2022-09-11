@@ -23,3 +23,27 @@
     global: yes
     production: yes
     state: present
+
+  - name: Create a directory if it does not exist
+    ansible.builtin.file:
+      path: ~/app
+      state: directory
+      mode: '0777'
+
+  - name: Another symbolic mode example, adding some permissions and removing others
+    ansible.builtin.copy:
+      src: ~/project/artifact.tar.gz
+      dest: ~/app/artifact.tar.gz
+
+  - name: Unarchive a file that is already on the remote machine
+    ansible.builtin.unarchive:
+      src: ~/app/artifact.tar.gz
+      dest: ~/app/
+      remote_src: yes
+
+  - name: run the backend
+    shell: |
+      cd ~/app/
+      sudo npm install 
+      sudo pm2 stop default
+      pm2 start npm -- start
