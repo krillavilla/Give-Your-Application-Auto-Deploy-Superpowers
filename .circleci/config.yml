@@ -358,8 +358,8 @@ jobs:
           command: |
             cd backend
             mkdir files
-            touch .tar
-            touch artifact.tar
+            touch files/.tar
+            touch files/artifact.tar
             npm i
             npm run build
             cd ..
