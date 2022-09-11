@@ -6,7 +6,7 @@
 
 - name: Upload app
   copy:
-    src: artifact.tar
+    src: backend/artifact.tar
     dest: "~/app"
 - name: Install dependencies
   become: true
