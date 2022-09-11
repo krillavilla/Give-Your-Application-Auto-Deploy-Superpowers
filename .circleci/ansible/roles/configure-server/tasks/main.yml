@@ -1,25 +1,15 @@
 ---
-- name: "update packages."
-  become: true
+- name: Download PPA
+  shell: > 
+    curl -sL https://deb.nodesource.com/setup_13.x -o nodesource_setup.sh && 
+    bash nodesource_setup.sh
+- name: install apt packages
   apt:
+    name:
+      - nodejs
     update_cache: yes
-
-- name: "upgrade packages."
-  become: true
-  apt:
-    upgrade: "yes"
-
-- name: "install dependencies."
-  become: true
-  apt:
-    name: ["nodejs", "npm"]
-    state: latest
-    update_cache: yes
-
-- name: "install pm2"
-  become: true
-  npm:
-    name: pm2
-    global: yes
-    production: yes
-    state: present
+    cache_valid_time: 3600
+  become: True
+- name: install pm2
+  shell: npm install pm2 -g
+  become: True

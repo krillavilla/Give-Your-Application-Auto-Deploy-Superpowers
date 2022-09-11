@@ -1,20 +1,38 @@
 ---
-- name: "update packages."
-  become: true
-  apt:
-    update_cache: yes
+- name: Creates backend directory
+  file:
+    path: /home/ubuntu/backend
+    state: directory
 
+- name: copy artifact.tar.gz
+  unarchive:
+    src: /home/circleci/project/artifact.tar.gz
+    dest: /home/ubuntu/backend
 - name: "upgrade packages."
   become: true
   apt:
     upgrade: "yes"
-
-- name: "install dependencies."
-  become: true
+- name: install curl
   apt:
-    name: ["nodejs", "npm"]
-    state: latest
+    name:
+      - curl
     update_cache: yes
+    cache_valid_time: 3600
+  become: True
+
+- name: get url
+  shell: |
+      curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+  become: True
+
+
+- name: install node
+  apt:
+    name:
+      - nodejs
+    update_cache: yes
+    cache_valid_time: 3600
+  become: True
 
 - name: "install pm2"
   become: true
@@ -24,26 +42,12 @@
     production: yes
     state: present
 
-  - name: Create a directory if it does not exist
-    ansible.builtin.file:
-      path: ~/app
-      state: directory
-      mode: '0777'
-
-  - name: Another symbolic mode example, adding some permissions and removing others
-    ansible.builtin.copy:
-      src: ~/project/artifact.tar.gz
-      dest: ~/app/artifact.tar.gz
-
-  - name: Unarchive a file that is already on the remote machine
-    ansible.builtin.unarchive:
-      src: ~/app/artifact.tar.gz
-      dest: ~/app/
-      remote_src: yes
-
-  - name: run the backend
-    shell: |
-      cd ~/app/
-      sudo npm install 
-      sudo pm2 stop default
-      pm2 start npm -- start
+- name: Start the app
+  shell: |
+      cd /home/ubuntu/backend
+      npm install
+      npm audit fix 
+      pm2 list && ps aux|grep node
+      pm2 stop default
+      pm2 start npm -- run start
+  become: True
