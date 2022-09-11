@@ -384,7 +384,6 @@ jobs:
             apk add --update tar
             apk add --update gzip
             pip3 install awscli
-            aws --version
       - run:
           name: Backend smoke test.
           command: |
