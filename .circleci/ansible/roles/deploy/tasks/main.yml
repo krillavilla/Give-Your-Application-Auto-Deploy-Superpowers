@@ -31,20 +31,23 @@
 
 - name: Copy artifact.tar.gz file
   template:
-    src: "files/artifact.tar.gz"
+    src: "/root/project/artifact.tar.gz"
     dest: "/home/ubuntu/backend/artifact.tar.gz"
 
-- name: Install Node Dependencies
+- name: Uncompress Backend
+  shell: |
+    cd /home/ubuntu/backend
+    tar xvzf artifact.tar.gz -C .
+    ls -la
+
+- name: Build
+  become: true
   shell: |
     cd /home/ubuntu/backend
     npm install
-
-- name: Building backend service
-  shell: |
-    cd /home/ubuntu/backend
     npm run build
 
-- name: Running backend service
+- name: Start PM2
   shell: |
-    cd /home/ubuntu/backend    
-    pm2 start npm --no-automation --name "backend" -- run start
+    cd /home/ubuntu/backend
+    pm2 start npm --name backend -- start
