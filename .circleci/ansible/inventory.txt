@@ -1,2 +1,2 @@
 [web]
-ec2-35-86-83-192.us-west-2.compute.amazonaws.com
+ec2-35-87-198-200.us-west-2.compute.amazonaws.com

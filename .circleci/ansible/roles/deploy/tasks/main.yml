@@ -1,43 +1,63 @@
 ---
-- name: Install Dependencies
-  become: true
+- name: Print env variable
+   shell: echo $PATH
+   register: print_result
+
+ - name: print message
+   debug:
+     msg: "{{ print_result.stdout_lines }}"
+
+- name: "update apt packages."
+  become: yes
+  apt:
+    update_cache: yes
+
+- name: "upgrade packages"
+  become: yes
+  apt:
+    upgrade: yes
+
+- name: remove dependencies that are no longer required
+  become: yes
+  apt:
+    autoremove: yes
+
+- name: "install dependencies."
+  become: yes
   apt:
     name: ["nodejs", "npm"]
     state: latest
     update_cache: yes
 
-- name: Install pm2
-  become: true
+- name: "install pm2"
+  become: yes
   npm:
     name: pm2
     global: yes
     production: yes
     state: present
 
-- name: Creates Directory
+- name: Creates directory
   file:
     path: /home/ubuntu/backend
     state: directory
 
-- name: Copy backend dist files web server
-  copy:
-    src: /root/project/artifact.tar.gz
-    dest: /home/ubuntu/backend/artifact.tar.gz
+- name: Copy artifact.tar.gz file
+  template:
+    src: "files/artifact.tar.gz"
+    dest: "/home/ubuntu/backend/artifact.tar.gz"
 
-- name: Uncompress Backend
-  shell: |
-    cd /home/ubuntu/backend
-    tar xvzf artifact.tar.gz -C .
-    ls -la
-
-- name: Build
-  become: true
+- name: Install Node Dependencies
   shell: |
     cd /home/ubuntu/backend
     npm install
-    npm run build
 
-- name: Start PM2
+- name: Building backend service
   shell: |
     cd /home/ubuntu/backend
-    pm2 start npm --name backend -- start
+    npm run build
+
+- name: Running backend service
+  shell: |
+    cd /home/ubuntu/backend    
+    pm2 start npm --no-automation --name "backend" -- run start
