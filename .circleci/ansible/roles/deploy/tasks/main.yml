@@ -31,7 +31,7 @@
 
 - name: Copy artifact.tar.gz file
   template:
-    src: "/root/project/artifact.tar.gz"
+    src: "/root/project/.circleci/ansible/artifact.tar.gz"
     dest: "/home/ubuntu/backend/artifact.tar.gz"
 
 - name: Uncompress Backend
