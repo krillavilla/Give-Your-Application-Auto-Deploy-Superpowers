@@ -224,6 +224,8 @@ jobs:
             sudo apt upgrade
             sudo apt install ansible && sudo apt install tar 
             sudo apt install gzip
+      - attach_workspace:
+          at: ~/
       - run:
           name: Configure Server
           no_output_timeout: 30m
@@ -242,8 +244,6 @@ jobs:
             cd .circleci/ansible
             cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml
-      - attach_workspace:
-          at: ~/
       - destroy-environment
 
   run-migrations:
