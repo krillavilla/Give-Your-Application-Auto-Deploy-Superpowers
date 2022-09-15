@@ -359,8 +359,6 @@ jobs:
             npm i
             npm run build
             cd ..
-            pwd
-            ls
             tar -C backend -czvf artifact.tar.gz .
             ls
             pwd
@@ -368,8 +366,8 @@ jobs:
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
-      - destroy-environment
-      - revert-migrations
+      #- destroy-environment
+      #- revert-migrations
 
   smoke-test:
     docker:
