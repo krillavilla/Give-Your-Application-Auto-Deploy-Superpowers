@@ -358,7 +358,6 @@ jobs:
             cd backend
             cd ..
             tar -C backend -czvf artifact.tar.gz .
-            ls
             mkdir -p /root/project
             mv artifact.tar.gz /root/project/artifact.tar.gz
             cd .circleci/ansible
