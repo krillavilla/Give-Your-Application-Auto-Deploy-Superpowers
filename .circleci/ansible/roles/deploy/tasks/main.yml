@@ -31,8 +31,8 @@
 
 - name: Copy artifact.tar.gz file
   template:
-    src: "/root/project/artifact.tar.gz"
-    dest: "/home/ubuntu/backend/artifact.tar.gz"
+    src: files/artifact.tar.gz
+    dest: /home/ubuntu/backend
 
 - name: Uncompress Backend
   shell: |
