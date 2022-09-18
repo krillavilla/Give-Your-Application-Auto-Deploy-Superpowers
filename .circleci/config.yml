@@ -439,6 +439,8 @@ jobs:
             export OLD_WORKFLOW_ID=$(aws cloudformation \
               list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
               --no-paginate --output text)
+            echo $OLD_WORKFLOW_ID >> ~/OLD_WORKFLOW_ID.txt
+            cat ~/OLD_WORKFLOW_ID.txt
       - run:
           name: Update cloudfront distribution
           command: |
@@ -447,6 +449,34 @@ jobs:
              --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
              --tags project=udapeople
              echo "Cloudfront distribution updated"
+
+  cleanup:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Remove old stacks and files
+          command: |
+            # Fetch the old stack workflow id
+            export OldWorkflowID=$(aws cloudformation \
+              list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+              --no-paginate --output text)
+            echo Old Workflow ID: $OldWorkflowID
+            # Fetch the stack names
+            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+            --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
+            echo "Stack names are ${STACKS[@]}"
+            
+            #Condition to remove stacks/s3 bucket
+            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+            then
+              echo "Removing stacks/s3 bucket"
+              # Remove stacks
+              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+              aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+              aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"  
+            fi
       - destroy-environment
       - revert-migrations
       # Here's where you will add some code to rollback on failure
@@ -484,3 +514,5 @@ workflows:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
           requires: [ smoke-test ]
+      - cleanup:
+          requires: [cloudfront-update]
